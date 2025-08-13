@@ -1,4 +1,6 @@
 <?php
+require './config/dbconnect.php';
+
 // エラーメッセージ用の配列
 $errors = [
   'pizza-name' => '',
@@ -62,15 +64,49 @@ if (isset($_POST['submit'])) {
   // if文に要素がある配列を入れるとtrue, 空の配列を入れるとfalse
   // エラーがなかった場合の処理
   if (!array_filter($errors)) {
-    // TOPページへリダイレクト
-    header("location: index.php");
-    exit; //処理をここでストップする
+    // データベースへのデータの挿入
+    // 👇この書き方 = heredoc という書き方 = ダブルクォテーションと同じ扱い
+    $sql = <<< SQL
+      INSERT INTO `pizzas`
+        (`pizza_name`, `chef_name`, `toppings`) 
+      VALUES
+        (?, ?, ?)
+SQL; //内容がこの文字よりも先頭に来ないように注意
+
+    $stmt = $db->prepare($sql);
+    $stmt->bindValue(1, $_POST['pizza-name']);
+    $stmt->bindValue(2, $_POST['chef-name']);
+    $stmt->bindValue(3, $_POST['toppings']);
+    $result = $stmt->execute(); //SQLの実行がうまく行った場合 true, 失敗した場合 false
+
+    // 行への影響をチェックする
+    $count = $stmt->rowCount(); // データが挿入されれば1, されなければ0
+
+    // 登録エラー用の変数
+    $db_error = '';
+
+    if ($result && $count) {
+      // echo 'データベースへの登録が成功しました';
+      // TOPページへリダイレクト
+      header("location: index.php");
+      exit; //処理をここでストップする
+    } else {
+      $db_error = 'データベースへの登録が失敗しました';
+    }
   }
 }
 ?>
 <?php include './template/header.php' ?>
 
 <div class="container">
+
+  <!-- DB登録エラーメッセージ -->
+  <?php if (!empty($db_error)): ?>
+    <div class="alert alert-danger" role=" alert">
+      <?= $db_error; ?>
+    </div>
+  <?php endif; ?>
+
   <h1 class="my-5 h4 text-center">ピザの追加</h1>
 
   <div class="row justify-content-center">
