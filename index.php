@@ -24,7 +24,7 @@ $resultAll = $stmt->fetchAll(); // データ取得(全件)
           <div class="card-body">
             <h2 class="card-title h4"><?= htmlspecialchars($pizza['pizza_name']); ?></h2>
             <p class="card-text"><?= htmlspecialchars($pizza['toppings']); ?></p>
-            <a href="#" class="btn btn-primary">詳細</a>
+            <a href="detail.php?id=<?= htmlspecialchars($pizza['id']); ?>" class="btn btn-primary">詳細</a>
           </div>
         </div><!-- /card -->
       </div><!-- /col-lg-4 -->
