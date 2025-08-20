@@ -2,7 +2,7 @@
 // DBへの接続
 $dsn = 'mysql:host=localhost;dbname=pizzashop;charset=utf8';
 $user = 'pizzataro';
-$pass = 'b3gILmXNHF[/0oDg';
+$pass = 'zPP9k5D3g7e0fEYS';
 $option = [
   // エラーの表示の仕方
   PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,

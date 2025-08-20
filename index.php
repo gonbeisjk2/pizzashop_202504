@@ -1,4 +1,6 @@
 <?php
+session_start();
+
 require './config/dbconnect.php';
 
 $sql = 'SELECT * FROM pizzas';
@@ -14,6 +16,11 @@ $resultAll = $stmt->fetchAll(); // データ取得(全件)
 <?php include './template/header.php' ?>
 
 <div class="container">
+
+  <?php if (isset($_SESSION['message'])): ?>
+    <p class="alert alert-success mb-5"><?= $_SESSION['message']; ?></p>
+    <?php unset($_SESSION['message']); // セッション変数の削除 ?>
+  <?php endif; ?>
 
   <h1 class="text-center my-5 display-4">Our Special Pizzas</h1>
 

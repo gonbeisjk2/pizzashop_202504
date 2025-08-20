@@ -1,11 +1,28 @@
 <?php
+session_start();
+
+require './config/dbconnect.php';
+
+// 商品削除用コード =========================
+if (isset($_POST['delete'])) {
+  $sql = 'DELETE FROM pizzas WHERE id = ?';
+  $stmt = $db->prepare($sql);
+  $stmt->bindValue(1, $_POST['delete']);
+  $result = $stmt->execute();
+
+  if ($result && $stmt->rowCount()) {
+    $_SESSION['message'] = "{$_POST['delete']}のピザの削除に成功しました";
+    header('location: index.php');
+    exit;
+  }
+}
+
+// 詳細ページ表示用コード =========================
 // idパラメーターがない場合TOPページへリダイレクト
 if (!isset($_GET['id'])) {
   header('location: index.php');
   exit;
 }
-
-require './config/dbconnect.php';
 
 $sql = 'SELECT * FROM pizzas WHERE id = ?';
 // 👇セキュリティ上良くない書き方
@@ -41,8 +58,12 @@ if ($result) {
               <?= htmlspecialchars($pizza['created_at']); ?>
             </p>
           </div>
-          <div class="card-footer text-end">
-            <button class="btn btn-danger">削除</button>
+          <div class="card-footer text-end d-flex justify-content-end gap-2">
+            <a href="update.php?id=<?= htmlspecialchars($pizza['id']); ?>" class="btn btn-primary">編集</a>
+            <form action="detail.php" method="post" id="delete-form">
+              <input type="hidden" name="delete" value="<?= htmlspecialchars($pizza['id']); ?>">
+              <button class="btn btn-danger">削除</button>
+            </form>
           </div>
         </div>
       </div>
@@ -56,5 +77,16 @@ if ($result) {
     </div>
   <?php endif; ?>
 </div>
+
+<script>
+  const deleteForm = document.querySelector('#delete-form');
+
+  deleteForm.addEventListener('submit', e => {
+    e.preventDefault();
+    if (confirm('本当に削除しますか？')) {
+      deleteForm.submit();
+    }
+  });
+</script>
 
 <?php include './template/footer.php' ?>
